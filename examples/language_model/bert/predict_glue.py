@@ -64,6 +64,10 @@ def parse_args():
         type=int,
         help="The maximum total input sequence length after tokenization. Sequences longer "
         "than this will be truncated, sequences shorter will be padded.", )
+    parser.add_argument(
+        "--use_tensorrt",
+        action='store_true',
+        help="Whether to use inference engin TensorRT.", )
     args = parser.parse_args()
     return args
 
@@ -89,6 +93,14 @@ class Predictor(object):
             # set XPU configs accordingly
             config.enable_xpu(100)
         config.switch_use_feed_fetch_ops(False)
+        if args.use_tensorrt:
+            config.enable_tensorrt_engine(
+                workspace_size=1 << 30,
+                precision_mode=inference.PrecisionType.Float32,
+                max_batch_size=1,
+                min_subgraph_size=5,
+                use_static=False,
+                use_calib_mode=False)
         predictor = paddle.inference.create_predictor(config)
         input_handles = [
             predictor.get_input_handle(name)
