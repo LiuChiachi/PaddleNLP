@@ -101,6 +101,39 @@ class Predictor(object):
                 min_subgraph_size=5,
                 use_static=False,
                 use_calib_mode=False)
+            print("Enable TensorRT is: {}".format(
+                config.tensorrt_engine_enabled()))
+
+            names = [
+                "input_ids",
+                "token_type_ids",
+                "tmp_4",
+                "unsqueeze2_0.tmp_0",
+            ]
+            min_input_shape = [1, 1]
+            max_input_shape = [args.batch_size, args.max_seq_length]
+            opt_batch_size = args.batch_size
+            opt_max_seq_len = args.max_seq_length / 2
+            opt_input_shape = [opt_batch_size, opt_max_seq_len]
+            config.set_trt_dynamic_shape_info(
+                min_input_shape={
+                    names[0]: min_input_shape,
+                    names[1]: min_input_shape,
+                    names[2]: min_input_shape,
+                    names[3]: [1, 1, 1, 1],
+                },
+                max_input_shape={
+                    names[0]: max_input_shape,
+                    names[1]: max_input_shape,
+                    names[2]: max_input_shape,
+                    names[3]: [args.batch_size, 1, 1, args.max_seq_length],
+                },
+                optim_input_shape={
+                    names[0]: opt_input_shape,
+                    names[1]: opt_input_shape,
+                    names[2]: opt_input_shape,
+                    names[3]: [opt_batch_size, 1, 1, opt_max_seq_len],
+                })
         predictor = paddle.inference.create_predictor(config)
         input_handles = [
             predictor.get_input_handle(name)

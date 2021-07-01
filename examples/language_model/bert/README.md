@@ -200,11 +200,12 @@ python -u ./predict_glue.py \
     --use_tensorrt
 ```
 
-需要注意的是，如果使用TensorRT预测引擎进行预测，需要参考[PaddlePaddle官网](https://www.paddlepaddle.org.cn/documentation/docs/zh/install/index_cn.html)安装带有TensorRT的Paddle包。如果环境与官网提供环境不一致，或者对飞桨源代码有修改需求可以下载[TensorRT库](https://developer.nvidia.com/zh-cn/tensorrt)之后，使用[源码编译](https://paddle-inference.readthedocs.io/en/latest/user_guides/source_compile.html)带有TensorRT预测引擎的Paddle包。下面是使用TensorRT与不使用TensorRT时预测时间的对比(batch_size: 32，单位: s)：
-|                | RTE(test) | CoLA(test) | SST-2(test) | MRPC(test) |
-| -------------- | --------- | ---------- | ----------- | ---------- |
-| 未使用TensorRT | 0.3382    | 0.1026     | 0.1684      | 0.1904     |
-| 使用TensorRT   | 0.1600    | 0.0474     | 0.0817      | 0.0951     |
+需要注意的是，如果使用TensorRT预测引擎进行预测，需要参考[PaddlePaddle官网](https://www.paddlepaddle.org.cn/documentation/docs/zh/install/index_cn.html)安装带有TensorRT的Paddle包。如果环境与官网提供环境不一致，或者对飞桨源代码有修改需求可以下载[TensorRT库](https://developer.nvidia.com/zh-cn/tensorrt)之后，使用[源码编译](https://paddle-inference.readthedocs.io/en/latest/user_guides/source_compile.html)带有TensorRT预测引擎的Paddle包。更多的使用TensorRT的样例可以参考[Paddle-Inference-Demo](https://github.com/PaddlePaddle/Paddle-Inference-Demo/blob/master/docs/optimize/paddle_trt.rst)。下面是使用TensorRT的动态shape模式预测与不使用TensorRT时预测时间的对比(batch_size: 32，单位: s)：
+|                       | RTE(test) | CoLA   | SST-2(test) | MRPC   |
+| --------------------- | --------- | ------ | ----------- | ------ |
+| 未使用TensorRT        | 0.3465    | 0.1599 | 0.2517      | 0.1969 |
+| 使用TensorRT(Float32) | 0.2118    | 0.0826 | 0.1057      | 0.1085 |
+
 
 
 同时支持使用输入样例数据的方式进行预测任务，这里仅以文本情感分类数据[SST-2](https://nlp.stanford.edu/sentiment/index.html)为例，输出样例数据的分类预测结果：
@@ -215,8 +216,6 @@ python -u ./predict.py \
     --device gpu \
     --max_seq_length 128
 ```
-
-
 
 其中参数释义如下：
 - `model_path` 表示预测模型文件的前缀，和上一步导出预测模型中的`output_path`一致。
